@@ -278,7 +278,7 @@ export function renderDonut(container, rows) {
   }
 
   node.appendChild(el("text", { x: cx, y: cy - 4, class: "donut-center", "text-anchor": "middle" }, formatters.currency(rows.reduce((sum, row) => sum + row.value, 0), true)));
-  node.appendChild(el("text", { x: cx, y: cy + 18, class: "axis-label donut-subtitle", "text-anchor": "middle" }, "trip revenue"));
+  node.appendChild(el("text", { x: cx, y: cy + 18, class: "axis-label donut-subtitle", "text-anchor": "middle" }, "gross bookings"));
   container.appendChild(node);
 }
 
@@ -590,7 +590,7 @@ function donutTooltip(row) {
     title: row.label,
     kicker: "sales channel mix",
     rows: [
-      ["Trip revenue", formatters.currency(row.value, true)],
+      ["Gross bookings", formatters.currency(row.value, true)],
       ["Mix", formatters.percent(row.pct)],
       ["Flight legs", formatters.number(row.orders)],
       ["Revenue / leg", formatters.currency(row.orders ? row.value / row.orders : 0)]
@@ -611,7 +611,7 @@ function forecastTooltip(row) {
       ["Flight legs", formatters.number(row.orders)],
       ["Flight / support cost", `${formatters.currency(row.cogs, true)} / ${formatters.currency(row.labor, true)}`]
     ],
-    note: "Scenario reflects the active member app mix, fuel cost, volume, support efficiency, and service-credit controls."
+    note: "Scenario reflects the active app + website mix, fuel cost, volume, support efficiency, and service-credit controls."
   };
 }
 

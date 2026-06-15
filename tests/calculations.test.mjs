@@ -45,10 +45,10 @@ assert.equal(
 );
 
 const summary = summarize(data.orders, data.labor);
-assert.ok(summary.netSales > 0, "summary net sales should be positive");
+assert.ok(summary.grossSales > 0, "summary gross bookings should be positive");
 assert.ok(summary.contributionMargin > 0, "summary contribution margin should be positive");
 assert.ok(summary.marginPct > 0.05 && summary.marginPct < 0.5, "margin percent should be realistic");
-assert.ok(summary.directOrderMix > 0.05 && summary.directOrderMix < 0.35, "member app/web mix should be realistic");
+assert.ok(summary.directOrderMix > 0.05 && summary.directOrderMix < 0.35, "app + website mix should be realistic");
 
 const comparison = comparePeriods(data, filters);
 const bridge = varianceBridge(comparison.currentSummary, comparison.previousSummary);
@@ -56,12 +56,12 @@ assert.equal(bridge.at(0).type, "start", "variance bridge should start with prio
 assert.equal(bridge.at(-1).type, "end", "variance bridge should end with current value");
 
 const locations = locationPerformance(data, filters);
-assert.equal(locations.length, data.locations.length, "all bases should appear in performance table");
-assert.ok(locations.some((location) => location.risk !== "low"), "risk model should flag at least one attention base");
+assert.equal(locations.length, data.locations.length, "all service areas should appear in performance table");
+assert.ok(locations.some((location) => location.risk !== "low"), "risk model should flag at least one attention service area");
 
-const northeastBases = locationPerformance(data, { ...filters, market: "New York", district: "Northeast" });
-assert.ok(northeastBases.length > 0, "filtered P&L should retain matching bases with activity");
-assert.ok(northeastBases.every((location) => location.market === "New York" && location.district === "Northeast"), "filtered P&L should not show zero-leg nonmatching markets");
+const eastServiceAreas = locationPerformance(data, { ...filters, market: "New York", district: "East Primary Service Area" });
+assert.ok(eastServiceAreas.length > 0, "filtered P&L should retain matching service areas with activity");
+assert.ok(eastServiceAreas.every((location) => location.market === "New York" && location.district === "East Primary Service Area"), "filtered P&L should not show zero-leg nonmatching markets");
 
 const allFiltered = filterData(data, filters);
 const brandFiltered = filterData(data, { ...filters, brandId: "signature" });
@@ -98,8 +98,8 @@ assert.ok(summaryText.why.length >= 3, "weekly summary should include variance d
 
 const parityFilters = [
   filters,
-  { ...filters, market: "Chicago" },
-  { ...filters, market: "New York", district: "Northeast", locationId: "teb-teterboro" },
+  { ...filters, market: "Illinois" },
+  { ...filters, market: "New York", district: "East Primary Service Area", locationId: "east-new-york" },
   { ...filters, brandId: "signature" },
   { ...filters, channelId: "direct" },
   { ...filters, range: { start: "2024-05-14", end: "2026-05-11" } }
@@ -113,11 +113,11 @@ for (const scopedFilters of parityFilters) {
 
   const scopedMix = channelMix(scoped.orders);
   const mixTotal = scopedMix.reduce((total, row) => total + row.value, 0);
-  assert.equal(Number(mixTotal.toFixed(2)), Number(scopedSummary.netSales.toFixed(2)), "channel mix should reconcile to scoped net sales");
+  assert.equal(Number(mixTotal.toFixed(2)), Number(scopedSummary.grossSales.toFixed(2)), "channel mix should reconcile to scoped gross bookings");
 
   const scopedLocations = locationPerformance(data, scopedFilters);
-  assert.ok(scopedLocations.every((location) => scopedFilters.market === "all" || location.market === scopedFilters.market), "base rows should respect market filters");
-  assert.ok(scopedLocations.every((location) => scopedFilters.locationId === "all" || location.id === scopedFilters.locationId), "base rows should respect base filters");
+  assert.ok(scopedLocations.every((location) => scopedFilters.market === "all" || location.market === scopedFilters.market), "service-area rows should respect market filters");
+  assert.ok(scopedLocations.every((location) => scopedFilters.locationId === "all" || location.id === scopedFilters.locationId), "service-area rows should respect service-area filters");
 
   const scopedMenu = menuPerformance(data, scopedFilters);
   assert.ok(scopedMenu.every((row) => row.summary.netSales >= 0), "fleet economics rows should retain valid mission economics after filtering");
@@ -132,11 +132,11 @@ for (const scopedFilters of parityFilters) {
   assert.ok(scopedForecast.length > 0 && scopedForecast.length <= 104, "forecast should remain populated for scoped filters");
 }
 
-const csv = toCsv([{ date: "2026-05-11", base: "Teterboro / New York", product_line: "Signature Membership", channel: "Member app/web", aircraft_mission: "Phenom 300 member short hop", flight_legs: 1, gross_revenue: 9700 }]);
+const csv = toCsv([{ date: "2026-05-11", service_area: "New York service area", product_line: "Wheels Up Signature Membership", channel: "Wheels Up app + website", aircraft_mission: "Phenom 300 series Signature flight", flight_legs: 1, gross_bookings: 24800 }]);
 const parsed = parseCsv(csv);
-assert.equal(parsed[0].gross_revenue, 9700, "CSV parser should coerce numeric fields");
+assert.equal(parsed[0].gross_bookings, 24800, "CSV parser should coerce numeric fields");
 assert.equal(validateUpload("orders", parsed).ok, true, "sample flight-leg CSV should validate");
-const formulaSafeCsv = toCsv([{ date: "2026-05-11", gross_revenue: 9700, base: "=Teterboro", channel: "+Member app" }]);
-assert.ok(/'=Teterboro/.test(formulaSafeCsv) && /'\+Member app/.test(formulaSafeCsv), "CSV exporter should neutralize formula-like values");
+const formulaSafeCsv = toCsv([{ date: "2026-05-11", gross_bookings: 24800, service_area: "=New York", channel: "+Wheels Up app" }]);
+assert.ok(/'=New York/.test(formulaSafeCsv) && /'\+Wheels Up app/.test(formulaSafeCsv), "CSV exporter should neutralize formula-like values");
 
 console.log("calculation smoke tests passed");

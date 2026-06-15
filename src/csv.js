@@ -60,20 +60,20 @@ export function downloadText(filename, text, mime = "text/plain") {
 export function validateUpload(kind, rows) {
   const rules = {
     orders: {
-      required: ["date", "base", "product_line", "channel", "aircraft_mission", "flight_legs", "gross_revenue"],
-      numeric: ["flight_legs", "gross_revenue", "recovery_credit", "service_credit", "partner_selling_cost", "fuel_crew_aircraft_cost", "fbo_handling_cost", "dispatch_minutes"]
+      required: ["date", "service_area", "product_line", "channel", "aircraft_mission", "flight_legs", "gross_bookings"],
+      numeric: ["flight_legs", "gross_bookings", "recovery_credit", "service_credit", "partner_selling_cost", "fuel_crew_aircraft_cost", "fbo_handling_cost", "dispatch_minutes"]
     },
     labor: {
-      required: ["date", "base", "actual_hours", "hourly_rate"],
+      required: ["date", "service_area", "actual_hours", "hourly_rate"],
       numeric: ["scheduled_hours", "actual_hours", "hourly_rate", "payroll_burden_rate"]
     },
     forecast: {
-      required: ["week", "base", "revenue_forecast", "flight_legs_forecast", "margin_forecast"],
-      numeric: ["revenue_forecast", "flight_legs_forecast", "flight_cost_forecast", "support_cost_forecast", "margin_forecast"]
+      required: ["week", "service_area", "gross_bookings_forecast", "flight_legs_forecast", "margin_forecast"],
+      numeric: ["gross_bookings_forecast", "flight_legs_forecast", "flight_cost_forecast", "support_cost_forecast", "margin_forecast"]
     },
     menu: {
-      required: ["product_line", "aircraft_mission", "revenue", "fuel_crew_aircraft_cost", "fbo_handling_cost"],
-      numeric: ["revenue", "fuel_crew_aircraft_cost", "fbo_handling_cost", "dispatch_minutes"]
+      required: ["product_line", "aircraft_mission", "gross_bookings", "fuel_crew_aircraft_cost", "fbo_handling_cost"],
+      numeric: ["gross_bookings", "fuel_crew_aircraft_cost", "fbo_handling_cost", "dispatch_minutes"]
     }
   }[kind] || { required: [], numeric: [] };
   const headers = new Set(Object.keys(rows[0] || {}));

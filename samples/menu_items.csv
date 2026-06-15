@@ -1,4 +1,5 @@
-product_line,aircraft_mission,revenue,fuel_crew_aircraft_cost,fbo_handling_cost,dispatch_minutes,category
-Signature Membership,Phenom 300 member short hop,9400,3950,720,42,light jet mission
-On-Demand Charter,Challenger 300/350 on-demand,23800,10800,1650,64,super-mid mission
-Corporate Solutions,Executive roadshow itinerary,28600,13200,2100,78,multi-leg corporate
+product_line,aircraft_mission,gross_bookings,fuel_crew_aircraft_cost,fbo_handling_cost,dispatch_minutes,category
+Wheels Up Signature Membership,Phenom 300 series Signature flight,24800,17600,1550,70,premium light jet
+Wheels Up Signature Membership,Challenger 300 series Signature flight,35800,26200,2350,86,premium super-mid jet
+Global Private Charter,Safety-vetted operator charter,39200,30700,2650,90,operator network
+Corporate Membership / CES,Custom Enterprise Solutions itinerary,41800,32400,2880,96,enterprise travel

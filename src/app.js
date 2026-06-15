@@ -22,7 +22,7 @@ const TOUR_DISMISSED_KEY = "wheels-up-tour-dismissed-v1";
 const TOUR_COMPLETED_KEY = "wheels-up-tour-completed-v1";
 const DEFAULT_SAVED_VIEWS = [
   { name: "CFO weekly readout", type: "preset" },
-  { name: "Northeast reliability", type: "preset" },
+  { name: "East service-area reliability", type: "preset" },
   { name: "dispatch daily queue", type: "preset" },
   { name: "fleet economics - low yield", type: "preset" }
 ];
@@ -46,14 +46,14 @@ const TOUR_STEPS = [
   {
     target: "overview-filters",
     title: "Set the operating lens",
-    body: "Choose the date range, market, region, base, product line, sales channel, and forecast horizon for the full workspace.",
+    body: "Choose the date range, market, service region, service area, product line, sales channel, and forecast horizon for the full workspace.",
     why: "Keeps finance and operations aligned on the same scoped readout.",
     view: "overview"
   },
   {
     target: "overview-kpis",
     title: "Read the week at a glance",
-    body: "Start with trip revenue, adjusted contribution, flight legs, member app/web mix, and service credit rate. Each card pairs current performance with movement versus the comparison period.",
+    body: "Start with total gross bookings, adjusted contribution, flight legs, app + website mix, and service credit rate. Each card pairs current performance with movement versus the comparison period.",
     why: "Shows whether margin moved because of demand, mix, cost, recovery, or fleet efficiency.",
     view: "overview"
   },
@@ -67,15 +67,15 @@ const TOUR_STEPS = [
   {
     target: "overview-channel-mix",
     title: "Check channel economics",
-    body: "The donut and legend show where revenue is coming from by sales channel, including flight-leg count and net revenue contribution.",
+    body: "The donut and legend show where gross bookings are coming from by sales channel, including flight-leg count and booking contribution.",
     why: "Channel shift can materially change partner lift, service recovery, and adjusted contribution.",
     view: "overview"
   },
   {
     target: "overview-location-attention",
     title: "Focus the market review",
-    body: "This panel surfaces bases above the watch threshold with CM%, movement versus prior, risk level, and top driver.",
-    why: "Prioritizes leadership attention without scanning every operating base.",
+    body: "This panel surfaces service areas above the watch threshold with CM%, movement versus prior, risk level, and top driver.",
+    why: "Prioritizes leadership attention without scanning every service-area focus.",
     view: "overview"
   },
   {
@@ -133,7 +133,7 @@ let globalEventsBound = false;
 
 const nav = [
   { id: "overview", label: "executive overview", icon: "home" },
-  { id: "pnl", label: "base P&L", icon: "ledger" },
+  { id: "pnl", label: "service-area P&L", icon: "ledger" },
   { id: "menu", label: "fleet economics", icon: "grid" },
   { id: "forecast", label: "rolling forecast", icon: "trend" },
   { id: "actions", label: "operating actions", icon: "user" },
@@ -212,7 +212,7 @@ function render() {
     <main class="main">
       ${renderTopbar()}
       <section class="disclosure" aria-label="Prototype data disclosure">
-        Public-source-aligned Wheels Up product, market, and channel concepts; financial and operating values are modeled sample data, not actual Wheels Up data.
+        Public-source-aligned Wheels Up service areas, offerings, channels, fleet categories, and key metric scale; financial and operating values are modeled sample data, not actual Wheels Up data.
       </section>
       <section id="view-root" class="view-root">${renderView()}</section>
     </main>
@@ -341,8 +341,8 @@ function renderTopbar() {
       <div class="filters" data-tour="overview-filters">
         ${selectControl("date range", "range", rangeKey(), DATE_OPTIONS)}
         ${selectControl("market", "market", state.filters.market, [["all", "all"], ...uniqueOptions(LOCATIONS, "market")])}
-        ${selectControl("region", "district", state.filters.district, [["all", "all"], ...districts.map((district) => [district, district])])}
-        ${selectControl("base", "locationId", state.filters.locationId, [["all", "all"], ...locations.map((l) => [l.id, l.name])])}
+        ${selectControl("service region", "district", state.filters.district, [["all", "all"], ...districts.map((district) => [district, district])])}
+        ${selectControl("service area", "locationId", state.filters.locationId, [["all", "all"], ...locations.map((l) => [l.id, l.name])])}
         ${selectControl("product line", "brandId", state.filters.brandId, [["all", "all"], ...BRANDS.map((b) => [b.id, b.name])])}
         ${selectControl("sales channel", "channelId", state.filters.channelId, [["all", "all"], ...CHANNELS.map((c) => [c.id, c.name])])}
         ${showForecastWeeks ? selectControl("forecast horizon", "forecastWeeks", String(state.forecastWeeks), FORECAST_WEEK_OPTIONS.map((weeks) => [String(weeks), `${weeks}-week`])) : ""}
@@ -452,11 +452,11 @@ function renderOverview() {
 
   return `
     <div class="metric-row" data-tour="overview-kpis">
-      ${metricCard("trip revenue", currentSummary.netSales, previousSummary.netSales, "currency", "bad", false, comparisonText)}
+      ${metricCard("total gross bookings", currentSummary.grossSales, previousSummary.grossSales, "currency", "bad", false, comparisonText)}
       ${metricCard("adjusted contribution", currentSummary.contributionMargin, previousSummary.contributionMargin, "currency", "good", false, comparisonText)}
       ${metricCard("adjusted CM %", currentSummary.marginPct, previousSummary.marginPct, "percent", "bad", false, comparisonText)}
       ${metricCard("flight legs", currentSummary.orderCount, previousSummary.orderCount, "number", "bad", false, comparisonText)}
-      ${metricCard("member app mix", currentSummary.directOrderMix, previousSummary.directOrderMix, "percent", "good", false, comparisonText)}
+      ${metricCard("app + website mix", currentSummary.directOrderMix, previousSummary.directOrderMix, "percent", "good", false, comparisonText)}
       ${metricCard("service credit rate", currentSummary.refundRate, previousSummary.refundRate, "percent", "bad", true, comparisonText)}
     </div>
     <div class="dashboard-grid overview-grid">
@@ -474,16 +474,16 @@ function renderOverview() {
         </div>
       </article>
       <article class="panel span-4" data-tour="overview-channel-mix">
-        <div class="panel-header"><div><h2>revenue mix by channel</h2><p>% of trip revenue</p></div></div>
+        <div class="panel-header"><div><h2>gross bookings mix by channel</h2><p>% of modeled total gross bookings</p></div></div>
         <div class="donut-layout">
           <div id="donut" class="chart-host"></div>
           ${channelLegend(mixRows)}
         </div>
-        <div class="note-line">${icon("search")} Member app/web mix ${currentSummary.directOrderMix > previousSummary.directOrderMix ? "improved" : "declined"} ${formatters.points(currentSummary.directOrderMix - previousSummary.directOrderMix)} ${comparisonText}.</div>
+        <div class="note-line">${icon("search")} App + website mix ${currentSummary.directOrderMix > previousSummary.directOrderMix ? "improved" : "declined"} ${formatters.points(currentSummary.directOrderMix - previousSummary.directOrderMix)} ${comparisonText}.</div>
       </article>
       <article class="panel span-3" data-tour="overview-location-attention">
         <div class="panel-header">
-          <div><h2>bases needing attention <span class="badge danger">${attentionRows.length}</span></h2></div>
+          <div><h2>service areas needing attention <span class="badge danger">${attentionRows.length}</span></h2></div>
           <button class="link-btn" data-link-view="pnl" data-view="pnl">view all</button>
         </div>
         ${attentionList(attentionRows.slice(0, 4), hasCurrentActivity)}
@@ -527,13 +527,13 @@ function renderPnl() {
   const bridge = varianceBridge(comparison.currentSummary, comparison.previousSummary);
   const locationPanel = locations.length
     ? locationTable(locations, false)
-    : emptyState("No base activity found for this filter set.");
+    : emptyState("No service-area activity found for this filter set.");
   return `
-    <div class="section-heading"><div><h1>base + region P&L</h1><p>Transparent adjusted contribution by market, operating base, channel, and controllable flight-cost driver.</p></div>${exportButton("base-performance")}</div>
+    <div class="section-heading"><div><h1>service area + region P&L</h1><p>Transparent adjusted contribution by public service area, market, channel, and controllable flight-cost driver.</p></div>${exportButton("service-area-performance")}</div>
     <div class="dashboard-grid">
       <article class="panel span-8"><div class="panel-header"><div><h2>variance bridge</h2><p>Current period vs prior period</p></div></div><div id="pnl-waterfall" class="chart-host large"></div></article>
       <article class="panel span-4">${driverStack(bridge)}</article>
-      <article class="panel span-12"><div class="panel-header"><div><h2>base operating table</h2><p>Risk uses adjusted CM%, margin movement, and service-credit spikes.</p></div></div>${locationPanel}</article>
+      <article class="panel span-12"><div class="panel-header"><div><h2>service-area operating table</h2><p>Risk uses adjusted CM%, margin movement, and service-credit spikes.</p></div></div>${locationPanel}</article>
     </div>
   `;
 }
@@ -568,7 +568,7 @@ function renderForecastView() {
   });
   const weekSpan = series.length || 0;
   return `
-    <div class="section-heading"><div><h1>rolling forecast</h1><p>${weekSpan ? `${weekSpan}-week` : "long-horizon"} forecast with scenario controls for member app mix, fuel cost, flight-leg volume, support efficiency, and service-credit improvement.</p></div>${exportButton("rolling-forecast")}</div>
+    <div class="section-heading"><div><h1>rolling forecast</h1><p>${weekSpan ? `${weekSpan}-week` : "long-horizon"} forecast with scenario controls for app + website mix, fuel cost, flight-leg volume, support efficiency, and service-credit improvement.</p></div>${exportButton("rolling-forecast")}</div>
     <div class="dashboard-grid">
       <article class="panel span-8"><div class="panel-header"><div><h2>base vs scenario adjusted CM%</h2><p>Modeled trajectory from current sample aviation operating drivers.</p></div></div><div id="forecast-detail-chart" class="chart-host large"></div></article>
       <article class="panel span-4">${scenarioControls(series)}</article>
@@ -657,26 +657,26 @@ function renderDictionary() {
     {
       title: "finance",
       rows: [
-        ["Trip revenue", "Gross flight-leg revenue minus concessions, recovery credits, and service credits."],
-        ["Adjusted contribution", "Trip revenue minus partner selling cost, payment/admin cost, fuel/crew/aircraft cost, FBO/handling, and allocated support."],
-        ["Service credit rate", "Modeled service credits divided by gross flight-leg revenue."],
-        ["Effective selling cost", "Partner, broker, referral, and payment/admin cost divided by trip revenue."]
+        ["Total Gross Bookings", "Modeled gross spend for private jet, group charter, cargo, and related flight services before internal cost allocation."],
+        ["Adjusted contribution", "Modeled gross bookings minus partner selling cost, payment/admin cost, fuel/crew/aircraft cost, FBO/handling, and allocated support."],
+        ["Service credit rate", "Modeled service credits divided by gross flight-leg bookings."],
+        ["Effective selling cost", "Operator-network, referral, sales, service, and payment/admin cost divided by gross bookings."]
       ]
     },
     {
       title: "forecast",
       rows: [
         ["Rolling forecast", "Weekly revenue, flight-leg, variable cost, support cost, and margin targets over the selected horizon."],
-        ["Scenario CM%", "Forecast margin adjusted for member app mix lift, fuel cost pressure, flight-leg growth, support efficiency, and service-credit improvement."],
+        ["Scenario CM%", "Forecast margin adjusted for app + website mix lift, fuel cost pressure, flight-leg growth, support efficiency, and service-credit improvement."],
         ["Upside", "Scenario CM% minus base CM% for the active forecast horizon."]
       ]
     },
     {
       title: "operations",
       rows: [
-        ["Member app/web mix", "Member app/web trip revenue divided by total trip revenue."],
+        ["App + website mix", "Wheels Up app + website gross bookings divided by total modeled gross bookings."],
         ["Variance bridge", "Change in adjusted CM% decomposed into channel mix, selling cost, service credits, variable flight cost, support efficiency, and residual drivers."],
-        ["Operating action", "A base-specific recommendation with owner, due date, evidence, and modeled margin impact."]
+        ["Operating action", "A service-area recommendation with owner, due date, evidence, and modeled margin impact."]
       ]
     }
   ];
@@ -745,7 +745,7 @@ function channelLegend(rows) {
 function locationTable(rows, compact) {
   return `
     <div class="table-wrap"><table class="data-table">
-      <thead><tr><th>base</th><th>region</th><th>CM %</th><th>Δ vs prior</th><th>risk</th>${compact ? "<th>top driver</th>" : "<th>trip revenue</th><th>service credit</th><th>top driver</th>"}</tr></thead>
+      <thead><tr><th>service area</th><th>service region</th><th>CM %</th><th>Δ vs prior</th><th>risk</th>${compact ? "<th>top driver</th>" : "<th>gross bookings</th><th>service credit</th><th>top driver</th>"}</tr></thead>
       <tbody>
         ${rows.map((row) => `
           <tr>
@@ -754,7 +754,7 @@ function locationTable(rows, compact) {
             <td>${formatters.percent(row.summary.marginPct)}</td>
             <td class="${row.delta >= 0 ? "good" : "bad"}">${formatters.points(row.delta)}</td>
             <td><span class="status ${row.risk}">${row.risk}</span></td>
-            ${compact ? `<td>${row.topDriver?.label || "stable"} ${row.topDriver?.value < 0 ? "↑" : "↓"}</td>` : `<td>${formatters.currency(row.summary.netSales, true)}</td><td>${formatters.percent(row.summary.refundRate)}</td><td>${row.topDriver?.driver || "stable"}</td>`}
+            ${compact ? `<td>${row.topDriver?.label || "stable"} ${row.topDriver?.value < 0 ? "↑" : "↓"}</td>` : `<td>${formatters.currency(row.summary.grossSales, true)}</td><td>${formatters.percent(row.summary.refundRate)}</td><td>${row.topDriver?.driver || "stable"}</td>`}
           </tr>
         `).join("")}
       </tbody>
@@ -764,8 +764,8 @@ function locationTable(rows, compact) {
 
 function attentionList(rows, hasCurrentActivity = true) {
   if (!rows.length) {
-    const title = hasCurrentActivity ? "No bases above watch threshold." : "No base activity in selected filters.";
-    const detail = hasCurrentActivity ? "Current filters are inside normal margin and service-credit bands." : "Broaden or adjust filters to show active bases.";
+    const title = hasCurrentActivity ? "No service areas above watch threshold." : "No service-area activity in selected filters.";
+    const detail = hasCurrentActivity ? "Current filters are inside normal margin and service-credit bands." : "Broaden or adjust filters to show active service areas.";
     return `
       <div class="attention-list">
         <div class="attention-empty">
@@ -882,7 +882,7 @@ function summaryMetaStrip(summary) {
   return `
     <div class="summary-meta-strip">
       ${statChip("period", summary.period, "neutral")}
-      ${statChip("trip revenue", formatters.currency(current.netSales, true), "neutral")}
+      ${statChip("gross bookings", formatters.currency(current.grossSales, true), "neutral")}
       ${statChip("CM %", formatters.percent(current.marginPct), current.marginPct >= 0.2 ? "good" : "medium")}
       ${statChip("open actions", formatters.number(actions.filter((action) => action.status !== "done").length), "medium")}
       ${statChip("forecast upside", formatters.points(summary.forecast.upside), summary.forecast.upside >= 0 ? "good" : "danger")}
@@ -896,9 +896,9 @@ function statChip(label, value, tone = "neutral") {
 
 function uploadGuide(kind) {
   const guides = {
-    orders: ["date", "base", "product_line", "channel", "aircraft_mission", "flight_legs", "gross_revenue"],
-    labor: ["date", "base", "actual_hours", "hourly_rate"],
-    forecast: ["week", "base", "revenue_forecast", "flight_legs_forecast", "margin_forecast"],
+    orders: ["date", "service_area", "product_line", "channel", "aircraft_mission", "flight_legs", "gross_bookings"],
+    labor: ["date", "service_area", "actual_hours", "hourly_rate"],
+    forecast: ["week", "service_area", "gross_bookings_forecast", "flight_legs_forecast", "margin_forecast"],
     menu: ["product_line", "aircraft_mission", "revenue", "fuel_crew_aircraft_cost", "fbo_handling_cost"]
   };
   const labels = {
@@ -922,13 +922,13 @@ function forecastTable(series) {
       <div class="panel-header">
         <div><h2>forecast detail</h2><p>No forecast rows match the selected filters.</p></div>
       </div>
-      <div class="empty-state"><strong>No forecast data yet</strong><span>Adjust filters to a base/product line/channel that has forecast history.</span></div>
+      <div class="empty-state"><strong>No forecast data yet</strong><span>Adjust filters to a service area/product line/channel that has forecast history.</span></div>
     `;
   }
   return `
     <div class="panel-header"><div><h2>forecast detail</h2><p>Base and scenario margin by week.</p></div></div>
       <div class="table-wrap"><table class="data-table">
-        <thead><tr><th>week</th><th>revenue</th><th>flight legs</th><th>flight cost</th><th>support cost</th><th>base CM%</th><th>scenario CM%</th><th>upside</th></tr></thead>
+        <thead><tr><th>week</th><th>gross bookings</th><th>flight legs</th><th>flight cost</th><th>support cost</th><th>base CM%</th><th>scenario CM%</th><th>upside</th></tr></thead>
         <tbody>${series.map((row) => `<tr><td><strong>${row.week}</strong></td><td>${formatters.currency(row.revenue, true)}</td><td>${formatters.number(row.orders)}</td><td>${formatters.currency(row.cogs, true)}</td><td>${formatters.currency(row.labor, true)}</td><td>${formatters.percent(row.baseMarginPct)}</td><td class="good">${formatters.percent(row.scenarioMarginPct)}</td><td class="good">${formatters.points(row.scenarioMarginPct - row.baseMarginPct)}</td></tr>`).join("")}</tbody>
       </table></div>
   `;
@@ -1037,7 +1037,7 @@ function scenarioControls(series) {
   }
   const last = series.at(-1);
   const controls = [
-    ["directMixLift", "member app/web mix lift", "%", 0, 12],
+    ["directMixLift", "app + website mix lift", "%", 0, 12],
     ["foodInflation", "fuel + aircraft cost pressure", "%", -3, 8],
     ["volumeGrowth", "flight-leg volume growth", "%", -5, 10],
     ["laborEfficiency", "support efficiency gain", "%", 0, 8],
@@ -1479,9 +1479,9 @@ function handleAction(action) {
     downloadSamples();
     return;
   }
-  if (action === "export-base-performance.xls") {
-    exportWorkbook("wheels-up-base-performance.xls", workbookConfig("location", locations().map(locationExportRow), summary()));
-    notify("Base P&L Excel export downloaded.");
+  if (action === "export-service-area-performance.xls") {
+    exportWorkbook("wheels-up-service-area-performance.xls", workbookConfig("location", locations().map(locationExportRow), summary()));
+    notify("Service-area P&L Excel export downloaded.");
     return;
   }
   if (action === "export-fleet-economics.xls") {
@@ -1499,9 +1499,9 @@ function handleAction(action) {
     notify("Operating actions Excel export downloaded.");
     return;
   }
-  if (action === "export-base-performance.csv") {
-    exportRows("base-performance.csv", locations().map(locationExportRow));
-    notify("Base P&L CSV export downloaded.");
+  if (action === "export-service-area-performance.csv") {
+    exportRows("service-area-performance.csv", locations().map(locationExportRow));
+    notify("Service-area P&L CSV export downloaded.");
     return;
   }
   if (action === "export-fleet-economics.csv") {
@@ -1533,13 +1533,13 @@ function workbookConfig(kind, rows, summary) {
   const forecastWeekLabel = summary.forecast?.week || "Rolling Forecast";
   const configs = {
     location: {
-      title: "Base + Region P&L",
-      tableTitle: "Base Operating Table",
+      title: "Service Area + Region P&L",
+      tableTitle: "Service-Area Operating Table",
       columns: [
-        { key: "location", label: "Base", type: "text", width: 230 },
-        { key: "region", label: "Region", type: "text", width: 150 },
+        { key: "location", label: "Service Area", type: "text", width: 230 },
+        { key: "region", label: "Service Region", type: "text", width: 180 },
         { key: "market", label: "Market", type: "text", width: 140 },
-        { key: "net_sales", label: "Trip Revenue", type: "currency", width: 120 },
+        { key: "net_sales", label: "Gross Bookings", type: "currency", width: 135 },
         { key: "contribution_margin", label: "Adjusted Contribution", type: "currency", width: 170 },
         { key: "margin_pct", label: "CM %", type: "percent", width: 90, tone: (value) => value < 0.18 ? "bad" : value > 0.22 ? "good" : "" },
         { key: "delta_vs_prior", label: "Δ vs Prior", type: "points", width: 100 },
@@ -1552,7 +1552,7 @@ function workbookConfig(kind, rows, summary) {
       columns: [
         { key: "item", label: "Aircraft / Mission", type: "text", width: 240 },
         { key: "brand", label: "Product Line", type: "text", width: 190 },
-        { key: "price", label: "Revenue", type: "currency", width: 95 },
+        { key: "price", label: "Gross Bookings", type: "currency", width: 125 },
         { key: "food_cost", label: "Flight Cost", type: "currency", width: 105 },
         { key: "packaging", label: "FBO / Handling", type: "currency", width: 110 },
         { key: "unit_contribution", label: "Unit CM", type: "currency", width: 95 },
@@ -1567,7 +1567,7 @@ function workbookConfig(kind, rows, summary) {
       tableTitle: "Forecast Detail",
       columns: [
         { key: "week", label: "Week", type: "text", width: 90 },
-        { key: "revenue", label: "Revenue", type: "currency", width: 120 },
+        { key: "revenue", label: "Gross Bookings", type: "currency", width: 135 },
         { key: "orders", label: "Flight Legs", type: "number", width: 105 },
         { key: "cogs", label: "Flight Cost", type: "currency", width: 115 },
         { key: "labor", label: "Support Cost", type: "currency", width: 115 },
@@ -1581,7 +1581,7 @@ function workbookConfig(kind, rows, summary) {
       tableTitle: "Prioritized Actions",
       columns: [
         { key: "priority", label: "Priority", type: "risk", width: 90 },
-        { key: "location", label: "Base", type: "text", width: 170 },
+        { key: "location", label: "Service Area", type: "text", width: 190 },
         { key: "issue", label: "Issue", type: "longText", width: 300 },
         { key: "evidence", label: "Evidence", type: "longText", width: 390 },
         { key: "estimated_margin_impact_pts", label: "Modeled Impact", type: "text", width: 120, format: (value) => `${Number(value) >= 0 ? "+" : ""}${Number(value).toFixed(1)} pts`, tone: () => "good" },
@@ -1635,8 +1635,8 @@ function downloadSamples() {
   const { orderRows, laborRows } = toSampleCsv(sampleData);
   const forecastRows = sampleData.forecast.map((row) => ({
     week: row.week,
-    base: locationById[row.locationId].name,
-    revenue_forecast: row.revenueForecast,
+    service_area: locationById[row.locationId].name,
+    gross_bookings_forecast: row.revenueForecast,
     flight_legs_forecast: row.ordersForecast,
     flight_cost_forecast: row.cogsForecast,
     support_cost_forecast: row.laborForecast,
@@ -1645,7 +1645,7 @@ function downloadSamples() {
   const menuRows = MENU_ITEMS.map((item) => ({
     product_line: brandById[item.brand].name,
     aircraft_mission: item.name,
-    revenue: item.price,
+    gross_bookings: item.price,
     fuel_crew_aircraft_cost: item.foodCost,
     fbo_handling_cost: item.packaging,
     dispatch_minutes: item.laborMinutes,
@@ -1672,26 +1672,26 @@ function downloadSamples() {
         rows: [
           {
             dataset: "Flight Legs",
-            purpose: "Flight revenue, sales channel, product line, aircraft/mission type, recovery credits, and variable flight cost by base.",
-            required_fields: "date, base, product line, channel, aircraft mission, flight legs, gross revenue, recovery credits, service credits, partner selling cost",
+            purpose: "Gross bookings, sales channel, product line, aircraft/mission type, recovery credits, and variable flight cost by service area.",
+            required_fields: "date, service area, product line, channel, aircraft mission, flight legs, gross bookings, recovery credits, service credits, partner selling cost",
             format_note: "One row per booked flight-leg or mission economics line."
           },
           {
             dataset: "Support Hours",
             purpose: "Scheduled vs actual dispatch/support hours and fully loaded hourly cost.",
-            required_fields: "date, base, scheduled hours, actual hours, hourly rate, payroll burden",
-            format_note: "Daily rows by operating base."
+            required_fields: "date, service area, scheduled hours, actual hours, hourly rate, payroll burden",
+            format_note: "Daily rows by public service-area focus."
           },
           {
             dataset: "Forecast",
-            purpose: "104-week revenue, flight-leg, variable cost, support cost, and margin targets.",
-            required_fields: "week, base, revenue forecast, flight legs forecast, flight cost forecast, support cost forecast, margin forecast",
-            format_note: "Weekly rows by operating base."
+            purpose: "104-week gross bookings, flight-leg, variable cost, support cost, and margin targets.",
+            required_fields: "week, service area, gross bookings forecast, flight legs forecast, flight cost forecast, support cost forecast, margin forecast",
+            format_note: "Weekly rows by public service-area focus."
           },
           {
             dataset: "Aircraft Economics",
-            purpose: "Aircraft/mission revenue, fuel/crew/aircraft cost, FBO/handling cost, and dispatch assumptions.",
-            required_fields: "product line, aircraft mission, revenue, fuel crew aircraft cost, FBO handling cost, dispatch minutes, category",
+            purpose: "Aircraft/mission gross bookings, fuel/crew/aircraft cost, FBO/handling cost, and dispatch assumptions.",
+            required_fields: "product line, aircraft mission, gross bookings, fuel crew aircraft cost, FBO handling cost, dispatch minutes, category",
             format_note: "One row per mission or fleet economics profile."
           }
         ],
@@ -1707,12 +1707,12 @@ function downloadSamples() {
         rows: orderRows.slice(0, 30),
         columns: [
           { key: "date", label: "Date", type: "text", width: 105 },
-          { key: "base", label: "Base", type: "text", width: 180 },
+          { key: "service_area", label: "Service Area", type: "text", width: 180 },
           { key: "product_line", label: "Product Line", type: "text", width: 190 },
           { key: "channel", label: "Channel", type: "text", width: 135 },
           { key: "aircraft_mission", label: "Aircraft / Mission", type: "text", width: 230 },
           { key: "flight_legs", label: "Legs", type: "number", width: 70 },
-          { key: "gross_revenue", label: "Gross Revenue", type: "currency", width: 120 },
+          { key: "gross_bookings", label: "Gross Bookings", type: "currency", width: 120 },
           { key: "recovery_credit", label: "Recovery Credit", type: "currency", width: 120 },
           { key: "service_credit", label: "Service Credit", type: "currency", width: 110 },
           { key: "partner_selling_cost", label: "Partner Selling Cost", type: "currency", width: 135 }
@@ -1723,7 +1723,7 @@ function downloadSamples() {
         rows: laborRows.slice(0, 30),
         columns: [
           { key: "date", label: "Date", type: "text", width: 105 },
-          { key: "base", label: "Base", type: "text", width: 180 },
+          { key: "service_area", label: "Service Area", type: "text", width: 180 },
           { key: "scheduled_hours", label: "Scheduled Hours", type: "number", width: 125 },
           { key: "actual_hours", label: "Actual Hours", type: "number", width: 110 },
           { key: "hourly_rate", label: "Hourly Rate", type: "currency", width: 105 },
@@ -1735,8 +1735,8 @@ function downloadSamples() {
         rows: forecastRows,
         columns: [
           { key: "week", label: "Week", type: "text", width: 95 },
-          { key: "base", label: "Base", type: "text", width: 180 },
-          { key: "revenue_forecast", label: "Revenue Forecast", type: "currency", width: 135 },
+          { key: "service_area", label: "Service Area", type: "text", width: 180 },
+          { key: "gross_bookings_forecast", label: "Gross Bookings Forecast", type: "currency", width: 150 },
           { key: "flight_legs_forecast", label: "Flight Legs Forecast", type: "number", width: 140 },
           { key: "flight_cost_forecast", label: "Flight Cost Forecast", type: "currency", width: 135 },
           { key: "support_cost_forecast", label: "Support Cost Forecast", type: "currency", width: 135 },
@@ -1749,7 +1749,7 @@ function downloadSamples() {
         columns: [
           { key: "product_line", label: "Product Line", type: "text", width: 190 },
           { key: "aircraft_mission", label: "Aircraft / Mission", type: "text", width: 230 },
-          { key: "revenue", label: "Revenue", type: "currency", width: 95 },
+          { key: "gross_bookings", label: "Gross Bookings", type: "currency", width: 120 },
           { key: "fuel_crew_aircraft_cost", label: "Fuel/Crew/Aircraft", type: "currency", width: 140 },
           { key: "fbo_handling_cost", label: "FBO/Handling", type: "currency", width: 120 },
           { key: "dispatch_minutes", label: "Dispatch Minutes", type: "number", width: 125 },
@@ -1815,9 +1815,9 @@ function applySavedView(name) {
     state.view = "summary";
     state.filters = { ...state.filters, market: "all", district: "all", locationId: "all", brandId: "all", channelId: "all" };
   }
-  if (name === "Northeast reliability") {
+  if (name === "East service-area reliability" || name === "Northeast reliability") {
     state.view = "pnl";
-    state.filters = { ...state.filters, market: "New York", district: "Northeast", locationId: "all", brandId: "all", channelId: "all" };
+    state.filters = { ...state.filters, market: "New York", district: "East Primary Service Area", locationId: "all", brandId: "all", channelId: "all" };
   }
   if (name === "dispatch daily queue") {
     state.view = "actions";
@@ -1951,7 +1951,7 @@ function locationExportRow(row) {
     location: row.name,
     region: row.district,
     market: row.market,
-    net_sales: row.summary.netSales,
+    net_sales: row.summary.grossSales,
     contribution_margin: row.summary.contributionMargin,
     margin_pct: row.summary.marginPct,
     delta_vs_prior: row.delta,

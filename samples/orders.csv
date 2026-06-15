@@ -1,4 +1,5 @@
-date,base,product_line,channel,aircraft_mission,flight_legs,gross_revenue,recovery_credit,service_credit,partner_selling_cost,fuel_crew_aircraft_cost,fbo_handling_cost,dispatch_minutes
-2026-05-11,Teterboro / New York,Signature Membership,Member app/web,Phenom 300 member short hop,1,9700,38,0,260,4050,740,42
-2026-05-11,Miami Opa-locka,Delta Partnership Travel,Delta referral,Delta disruption recovery leg,1,15800,142,1180,790,7350,1530,72
-2026-05-11,Van Nuys / Los Angeles,On-Demand Charter,Broker / partner network,Challenger 300/350 on-demand,1,25100,350,0,2650,11600,1810,66
+date,service_area,product_line,channel,aircraft_mission,flight_legs,gross_bookings,recovery_credit,service_credit,partner_selling_cost,fuel_crew_aircraft_cost,fbo_handling_cost,dispatch_minutes
+2026-05-11,New York service area,Wheels Up Signature Membership,Wheels Up app + website,Phenom 300 series Signature flight,1,24800,50,0,520,17600,1550,70
+2026-05-11,Florida service area,Delta Premium Commercial,Delta partnership booking,Hybrid Delta + private itinerary,1,18600,130,980,1040,13700,1280,66
+2026-05-11,California service area,Global Private Charter,Safety-vetted operator network,Safety-vetted operator charter,1,39200,520,0,3300,30700,2650,90
+2026-05-11,Dallas, TX,Corporate Membership / CES,Corporate membership team,Corporate Membership business trip,1,29800,120,0,1120,21900,2050,82

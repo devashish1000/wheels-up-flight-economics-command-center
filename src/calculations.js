@@ -95,7 +95,7 @@ function scenarioKey(scenario = {}, weeks = "") {
 }
 
 /*
- * Support rows are exported by date/base, while product-line and channel filters
+ * Support rows are exported by date/service area, while product-line and channel filters
  * are flight-leg-level. Allocate base support to the filtered flight-leg set by
  * modeled dispatch minutes so scoped P&Ls stay credible instead of charging one
  * product line or channel for the entire operating desk.
@@ -225,7 +225,7 @@ export function summarize(orders = EMPTY_ORDERS, labor = EMPTY_LABOR) {
   let paymentFees = 0;
   let foodCost = 0;
   let packagingCost = 0;
-  let directSales = 0;
+  let directGrossBookings = 0;
   let quantity = 0;
 
   for (const order of orderRows) {
@@ -241,7 +241,7 @@ export function summarize(orders = EMPTY_ORDERS, labor = EMPTY_LABOR) {
     foodCost += Number(order.foodCost) || 0;
     packagingCost += Number(order.packagingCost) || 0;
     quantity += Number(order.quantity) || 0;
-    if (order.channelId === "direct") directSales += netRevenue;
+    if (order.channelId === "direct") directGrossBookings += Number(order.grossSales) || 0;
   }
 
   let laborExpense = 0;
@@ -270,7 +270,7 @@ export function summarize(orders = EMPTY_ORDERS, labor = EMPTY_LABOR) {
     marginPct: safeDivide(contributionMargin, netSales),
     orderCount,
     quantity,
-    directOrderMix: safeDivide(directSales, netSales),
+    directOrderMix: safeDivide(directGrossBookings, grossSales),
     refundRate: safeDivide(merchantRefunds, grossSales),
     effectiveFeeRate: safeDivide(platformFees + paymentFees, netSales),
     laborPerOrder: safeDivide(laborExpense, orderCount),
@@ -329,7 +329,7 @@ export function varianceBridge(currentSummary, previousSummary) {
   const labor = -(safeDivide(currentSummary.laborExpense, currentSummary.netSales) - safeDivide(previousSummary.laborExpense, previousSummary.netSales));
   const end = currentSummary.marginPct || 0;
   const rawDrivers = [
-    { id: "channel", label: "channel mix", value: channelMix, driver: channelMix >= 0 ? "member app/web mix improved" : "partner/broker mix increased" },
+    { id: "channel", label: "channel mix", value: channelMix, driver: channelMix >= 0 ? "app + website mix improved" : "operator network mix increased" },
     { id: "fees", label: "partner selling cost", value: feeRate, driver: feeRate >= 0 ? "effective selling cost improved" : "partner selling cost increased" },
     { id: "refunds", label: "service recovery credits", value: refunds, driver: refunds >= 0 ? "service credit rate improved" : "service recovery credits increased" },
     { id: "cogs", label: "fuel + aircraft cost", value: cogs, driver: cogs >= 0 ? "fleet mix and variable cost improved" : "fuel, crew, or aircraft cost worsened" },
@@ -348,7 +348,7 @@ export function channelMix(orders) {
   const orderRows = orders || EMPTY_ORDERS;
   if (CHANNEL_MIX_CACHES.has(orderRows)) return CHANNEL_MIX_CACHES.get(orderRows);
   const grouped = orderRows.reduce((groups, order) => {
-    const netSales = orderNetRevenue(order);
+    const grossBookings = Number(order.grossSales) || 0;
     const row = groups[order.channelId] || {
       id: order.channelId,
       label: channelById[order.channelId]?.name || order.channelId,
@@ -356,16 +356,16 @@ export function channelMix(orders) {
       color: channelById[order.channelId]?.color || "#777",
       orders: 0
     };
-    row.value += netSales;
+    row.value += grossBookings;
     row.orders += 1;
     groups[order.channelId] = row;
     return groups;
   }, {});
-  const totalNetSales = Object.values(grouped).reduce((total, row) => total + row.value, 0);
+  const totalGrossBookings = Object.values(grouped).reduce((total, row) => total + row.value, 0);
   const result = Object.values(grouped)
     .map((row) => ({
       ...row,
-      pct: safeDivide(row.value, totalNetSales)
+      pct: safeDivide(row.value, totalGrossBookings)
     }))
     .sort((a, b) => b.value - a.value);
   CHANNEL_MIX_CACHES.set(orderRows, result);
@@ -395,9 +395,9 @@ export function locationPerformance(data, filters) {
     const bridge = varianceBridge(currentSummary, previousSummary).filter((item) => item.type !== "start" && item.type !== "end");
     const topDriver = bridge.sort((a, b) => Math.abs(b.value) - Math.abs(a.value))[0];
     const riskScore =
-      (currentSummary.marginPct < 0.16 ? 3 : currentSummary.marginPct < 0.19 ? 1 : 0) +
-      (delta < -0.02 ? 3 : delta < -0.008 ? 1 : 0) +
-      (currentSummary.refundRate > 0.035 ? 2 : 0);
+      (currentSummary.marginPct < 0.045 ? 3 : currentSummary.marginPct < 0.07 ? 1 : 0) +
+      (delta < -0.02 ? 3 : delta < -0.012 ? 1 : 0) +
+      (currentSummary.refundRate > 0.012 ? 2 : currentSummary.refundRate > 0.006 ? 1 : 0);
     return {
       ...location,
       summary: currentSummary,
@@ -452,9 +452,9 @@ export function menuPerformance(data, filters) {
 }
 
 function recommendationForItem(summary, marginPct, orderCount) {
-  if (orderCount > 120 && marginPct < 0.34) return "review yield / lift mix";
-  if (summary.refundRate > 0.035) return "audit recovery";
-  if (marginPct > 0.42 && orderCount > 80) return "prioritize demand";
+  if (orderCount > 35 && marginPct < 0.08) return "review yield / lift mix";
+  if (summary.refundRate > 0.006) return "audit recovery";
+  if (marginPct > 0.12 && orderCount > 60) return "prioritize demand";
   return "monitor";
 }
 
@@ -552,9 +552,9 @@ export function weeklySummary(data, filters, scenario, options = {}) {
     title: "Weekly flight economics summary",
     period: formatRange(filters.range),
     changed: [
-      `Trip revenue ${deltaText(currentSummary.netSales, previousSummary.netSales)} vs ${comparisonNoun(filters.range)}.`,
+      `Total gross bookings ${deltaText(currentSummary.grossSales, previousSummary.grossSales)} vs ${comparisonNoun(filters.range)}.`,
       `Adjusted contribution margin moved ${formatters.points(currentSummary.marginPct - previousSummary.marginPct)} to ${formatters.percent(currentSummary.marginPct)}.`,
-      `Member app/web mix is ${formatters.percent(currentSummary.directOrderMix)} (${formatters.points(currentSummary.directOrderMix - previousSummary.directOrderMix)}).`
+      `App + website mix is ${formatters.percent(currentSummary.directOrderMix)} (${formatters.points(currentSummary.directOrderMix - previousSummary.directOrderMix)}).`
     ],
     why: drivers.map((driver) => `${driver.driver}: ${formatters.points(driver.value)} impact.`),
     next,

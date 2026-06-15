@@ -5,63 +5,66 @@ const RECENT_PRESSURE_START = DATA_DAYS - 10;
 const FORECAST_WEEKS = 104;
 
 export const LOCATIONS = [
-  { id: "teb-teterboro", name: "Teterboro / New York", market: "New York", district: "Northeast", manager: "Northeast dispatch", opened: "2024-05-20", capacity: "high" },
-  { id: "hpn-westchester", name: "Westchester County", market: "New York", district: "Northeast", manager: "Member ops east", opened: "2024-06-10", capacity: "medium" },
-  { id: "bed-bedford", name: "Boston Bedford", market: "Boston", district: "Northeast", manager: "Northeast fleet lead", opened: "2024-07-15", capacity: "medium" },
-  { id: "ack-nantucket", name: "Nantucket seasonal", market: "Nantucket", district: "Northeast", manager: "Seasonal recovery desk", opened: "2025-05-12", capacity: "pilot" },
-  { id: "pdk-atlanta", name: "Atlanta Peachtree-DeKalb", market: "Atlanta", district: "Southeast", manager: "Southeast ops", opened: "2024-05-27", capacity: "high" },
-  { id: "opf-miami", name: "Miami Opa-locka", market: "Miami", district: "Southeast", manager: "Florida operations", opened: "2024-06-24", capacity: "high" },
-  { id: "pbi-palm-beach", name: "Palm Beach", market: "Palm Beach", district: "Southeast", manager: "Florida member desk", opened: "2024-09-09", capacity: "medium" },
-  { id: "bna-nashville", name: "Nashville", market: "Nashville", district: "Southeast", manager: "Corporate desk south", opened: "2025-02-03", capacity: "medium" },
-  { id: "dal-love", name: "Dallas Love Field", market: "Dallas", district: "Central", manager: "Central operations", opened: "2024-08-05", capacity: "high" },
-  { id: "mdw-chicago", name: "Chicago Midway", market: "Chicago", district: "Central", manager: "Central fleet desk", opened: "2024-10-14", capacity: "medium" },
-  { id: "den-centennial", name: "Denver Centennial", market: "Denver", district: "Mountain", manager: "Mountain ops", opened: "2024-11-18", capacity: "medium" },
-  { id: "ase-aspen", name: "Aspen seasonal", market: "Aspen", district: "Mountain", manager: "Mountain recovery desk", opened: "2025-01-06", capacity: "pilot" },
-  { id: "sdl-scottsdale", name: "Scottsdale", market: "Scottsdale", district: "West", manager: "West member desk", opened: "2024-09-30", capacity: "medium" },
-  { id: "vny-van-nuys", name: "Van Nuys / Los Angeles", market: "Los Angeles", district: "West", manager: "West coast ops", opened: "2024-06-17", capacity: "high" },
-  { id: "las-henderson", name: "Las Vegas Henderson", market: "Las Vegas", district: "West", manager: "Event charter desk", opened: "2025-03-03", capacity: "medium" }
+  { id: "east-new-york", name: "New York service area", market: "New York", district: "East Primary Service Area", manager: "East member operations", opened: "2024-05-20", capacity: "high" },
+  { id: "east-florida", name: "Florida service area", market: "Florida", district: "East Primary Service Area", manager: "Florida operations", opened: "2024-06-24", capacity: "high" },
+  { id: "east-georgia", name: "Georgia / Atlanta service area", market: "Georgia", district: "East Primary Service Area", manager: "Southeast operations", opened: "2024-05-27", capacity: "medium" },
+  { id: "east-illinois", name: "Illinois / Chicago service area", market: "Illinois", district: "East Primary Service Area", manager: "Central fleet desk", opened: "2024-10-14", capacity: "medium" },
+  { id: "east-massachusetts", name: "Massachusetts service area", market: "Massachusetts", district: "East Primary Service Area", manager: "Northeast fleet lead", opened: "2024-07-15", capacity: "medium" },
+  { id: "east-tennessee", name: "Tennessee service area", market: "Tennessee", district: "East Primary Service Area", manager: "Corporate desk south", opened: "2025-02-03", capacity: "medium" },
+  { id: "tx-dallas", name: "Dallas, TX", market: "Texas", district: "East Primary Service Area", manager: "Texas operations", opened: "2024-08-05", capacity: "high" },
+  { id: "tx-houston", name: "Houston, TX", market: "Texas", district: "East Primary Service Area", manager: "Texas operations", opened: "2024-08-19", capacity: "medium" },
+  { id: "tx-austin", name: "Austin, TX", market: "Texas", district: "East Primary Service Area", manager: "Texas member desk", opened: "2024-09-09", capacity: "medium" },
+  { id: "west-california", name: "California service area", market: "California", district: "West Primary Service Area", manager: "West coast operations", opened: "2024-06-17", capacity: "high" },
+  { id: "west-arizona", name: "Arizona service area", market: "Arizona", district: "West Primary Service Area", manager: "West member desk", opened: "2024-09-30", capacity: "medium" },
+  { id: "west-colorado", name: "Colorado service area", market: "Colorado", district: "West Primary Service Area", manager: "Mountain operations", opened: "2024-11-18", capacity: "medium" },
+  { id: "west-nevada", name: "Nevada service area", market: "Nevada", district: "West Primary Service Area", manager: "Event charter desk", opened: "2025-03-03", capacity: "medium" },
+  { id: "kjac-jackson-hole", name: "KJAC Jackson Hole", market: "Wyoming", district: "Extended Service Area", manager: "Extended-area desk", opened: "2025-01-06", capacity: "access" },
+  { id: "ksun-sun-valley", name: "KSUN Sun Valley", market: "Idaho", district: "Extended Service Area", manager: "Extended-area desk", opened: "2025-01-13", capacity: "access" },
+  { id: "kbzn-bozeman", name: "KBZN Bozeman", market: "Montana", district: "Extended Service Area", manager: "Extended-area desk", opened: "2025-01-20", capacity: "access" },
+  { id: "bahamas-nassau", name: "MYNN Nassau, Bahamas", market: "Bahamas", district: "Extended Service Area", manager: "International access desk", opened: "2025-02-17", capacity: "access" },
+  { id: "europe-access", name: "Europe access countries", market: "Europe", district: "Access Service Area", manager: "Global charter desk", opened: "2025-03-24", capacity: "access" }
 ];
 
 export const BRANDS = [
-  { id: "signature", name: "Signature Membership", tone: "#1b4e7a" },
-  { id: "on-demand", name: "On-Demand Charter", tone: "#315f72" },
-  { id: "corporate", name: "Corporate Solutions", tone: "#4b6d8d" },
-  { id: "delta", name: "Delta Partnership Travel", tone: "#7b2433" },
+  { id: "signature", name: "Wheels Up Signature Membership", tone: "#1b4e7a" },
+  { id: "on-demand", name: "Global Private Charter", tone: "#315f72" },
+  { id: "corporate", name: "Corporate Membership / CES", tone: "#4b6d8d" },
+  { id: "delta", name: "Delta Premium Commercial", tone: "#7b2433" },
   { id: "group", name: "Group Charter", tone: "#7a5a23" },
-  { id: "cargo", name: "Cargo / Air Partner", tone: "#3f5f58" }
+  { id: "cargo", name: "Air Partner Cargo / Special Missions", tone: "#3f5f58" }
 ];
 
 export const CHANNELS = [
-  { id: "direct", name: "Member app/web", commission: 0.018, payment: 0.012, fixed: 85, color: "#2467a6" },
-  { id: "member-services", name: "Member services desk", commission: 0.028, payment: 0.012, fixed: 115, color: "#18364d" },
-  { id: "delta-referral", name: "Delta referral", commission: 0.042, payment: 0.011, fixed: 125, color: "#8c2f39" },
-  { id: "corporate-desk", name: "Corporate desk", commission: 0.024, payment: 0.01, fixed: 145, color: "#556a7f" },
-  { id: "broker-partner", name: "Broker / partner network", commission: 0.095, payment: 0.012, fixed: 225, color: "#b8752a" },
-  { id: "group-cargo", name: "Group / cargo desk", commission: 0.055, payment: 0.01, fixed: 260, color: "#4c6b63" }
+  { id: "direct", name: "Wheels Up app + website", commission: 0.018, payment: 0.012, fixed: 95, color: "#2467a6" },
+  { id: "member-services", name: "Sales + service team", commission: 0.038, payment: 0.012, fixed: 145, color: "#18364d" },
+  { id: "delta-referral", name: "Delta partnership booking", commission: 0.048, payment: 0.011, fixed: 150, color: "#8c2f39" },
+  { id: "corporate-desk", name: "Corporate membership team", commission: 0.032, payment: 0.01, fixed: 165, color: "#556a7f" },
+  { id: "broker-partner", name: "Safety-vetted operator network", commission: 0.078, payment: 0.012, fixed: 245, color: "#b8752a" },
+  { id: "group-cargo", name: "Air Partner group + cargo desk", commission: 0.055, payment: 0.01, fixed: 285, color: "#4c6b63" }
 ];
 
 export const MENU_ITEMS = [
-  { id: "phenom-member-short", brand: "signature", name: "Phenom 300 member short hop", category: "light jet mission", price: 9400, foodCost: 3950, packaging: 720, laborMinutes: 42, imageSlot: 0 },
-  { id: "citation-member-regional", brand: "signature", name: "Citation XLS regional member leg", category: "midsize mission", price: 12800, foodCost: 5450, packaging: 890, laborMinutes: 48, imageSlot: 1 },
-  { id: "challenger-on-demand", brand: "on-demand", name: "Challenger 300/350 on-demand", category: "super-mid mission", price: 23800, foodCost: 10800, packaging: 1650, laborMinutes: 64, imageSlot: 0 },
-  { id: "partner-large-cabin", brand: "on-demand", name: "Partner large-cabin charter", category: "partner aircraft", price: 35500, foodCost: 18200, packaging: 2450, laborMinutes: 72, imageSlot: 3 },
-  { id: "corporate-shuttle", brand: "corporate", name: "Corporate shuttle series", category: "recurring corporate", price: 18400, foodCost: 8050, packaging: 1320, laborMinutes: 58, imageSlot: 2 },
-  { id: "corporate-exec", brand: "corporate", name: "Executive roadshow itinerary", category: "multi-leg corporate", price: 28600, foodCost: 13200, packaging: 2100, laborMinutes: 78, imageSlot: 2 },
-  { id: "delta-premium-hop", brand: "delta", name: "Delta premium connection hop", category: "airline connection", price: 11600, foodCost: 4850, packaging: 930, laborMinutes: 46, imageSlot: 1 },
-  { id: "delta-recovery-leg", brand: "delta", name: "Delta disruption recovery leg", category: "recovery flight", price: 15400, foodCost: 7100, packaging: 1420, laborMinutes: 66, imageSlot: 1 },
-  { id: "event-group-charter", brand: "group", name: "Event group charter", category: "group movement", price: 42600, foodCost: 22600, packaging: 3150, laborMinutes: 86, imageSlot: 3 },
-  { id: "team-sports-charter", brand: "group", name: "Sports/team movement", category: "group movement", price: 51800, foodCost: 27800, packaging: 3820, laborMinutes: 96, imageSlot: 3 },
-  { id: "air-partner-cargo", brand: "cargo", name: "Air Partner urgent cargo", category: "cargo charter", price: 33200, foodCost: 17400, packaging: 2950, laborMinutes: 82, imageSlot: 2 },
-  { id: "special-mission", brand: "cargo", name: "Special mission charter", category: "special mission", price: 38600, foodCost: 20500, packaging: 3450, laborMinutes: 92, imageSlot: 2 }
+  { id: "phenom-signature", brand: "signature", name: "Phenom 300 series Signature flight", category: "premium light jet", price: 24800, foodCost: 17600, packaging: 1550, laborMinutes: 70, imageSlot: 0 },
+  { id: "challenger-signature", brand: "signature", name: "Challenger 300 series Signature flight", category: "premium super-mid jet", price: 35800, foodCost: 26200, packaging: 2350, laborMinutes: 86, imageSlot: 1 },
+  { id: "phenom-charter", brand: "on-demand", name: "Phenom 300 global charter", category: "private jet charter", price: 27200, foodCost: 20100, packaging: 1750, laborMinutes: 76, imageSlot: 0 },
+  { id: "operator-charter", brand: "on-demand", name: "Safety-vetted operator charter", category: "operator network", price: 39200, foodCost: 30700, packaging: 2650, laborMinutes: 90, imageSlot: 3 },
+  { id: "corporate-member", brand: "corporate", name: "Corporate Membership business trip", category: "corporate membership", price: 29800, foodCost: 21900, packaging: 2050, laborMinutes: 82, imageSlot: 2 },
+  { id: "ces-itinerary", brand: "corporate", name: "Custom Enterprise Solutions itinerary", category: "enterprise travel", price: 41800, foodCost: 32400, packaging: 2880, laborMinutes: 96, imageSlot: 2 },
+  { id: "delta-premium", brand: "delta", name: "Delta premium cabin booking", category: "premium commercial", price: 6200, foodCost: 4550, packaging: 380, laborMinutes: 26, imageSlot: 1 },
+  { id: "hybrid-private-commercial", brand: "delta", name: "Hybrid Delta + private itinerary", category: "private-commercial connection", price: 18600, foodCost: 13700, packaging: 1280, laborMinutes: 66, imageSlot: 1 },
+  { id: "event-group-charter", brand: "group", name: "Group Charter 15+ passenger movement", category: "group charter", price: 68400, foodCost: 54800, packaging: 4950, laborMinutes: 112, imageSlot: 3 },
+  { id: "team-sports-charter", brand: "group", name: "Sports/team charter movement", category: "group charter", price: 81200, foodCost: 65800, packaging: 5820, laborMinutes: 126, imageSlot: 3 },
+  { id: "air-partner-cargo", brand: "cargo", name: "Air Partner Cargo service", category: "cargo charter", price: 52200, foodCost: 41600, packaging: 4550, laborMinutes: 104, imageSlot: 2 },
+  { id: "special-mission", brand: "cargo", name: "Government / defense special mission", category: "special mission", price: 64600, foodCost: 51900, packaging: 5450, laborMinutes: 118, imageSlot: 2 }
 ];
 
 export const ACTIONS = [
   {
     id: "act-001",
     priority: "high",
-    locationId: "teb-teterboro",
-    issue: "Reduce Northeast deadhead after Sunday member returns",
-    evidence: "Teterboro recovery legs rose 1.6 pts and repositioning cost/flight leg is above the network median.",
+    locationId: "east-new-york",
+    issue: "Reduce East-area recovery lift after Sunday member returns",
+    evidence: "New York service-area recovery flights rose 1.6 pts and repositioning cost per flight leg is above the modeled network median.",
     estimatedImpactPts: 1.4,
     owner: "Northeast dispatch",
     status: "open",
@@ -70,9 +73,9 @@ export const ACTIONS = [
   {
     id: "act-002",
     priority: "high",
-    locationId: "opf-miami",
+    locationId: "east-florida",
     issue: "Tighten Florida recovery playbook for weather disruption windows",
-    evidence: "Service credits increased during PM convective weather while member app bookings held demand.",
+    evidence: "Service credits increased during PM convective weather while app + website bookings held demand.",
     estimatedImpactPts: 1.1,
     owner: "Florida operations",
     status: "in progress",
@@ -81,9 +84,9 @@ export const ACTIONS = [
   {
     id: "act-003",
     priority: "high",
-    locationId: "vny-van-nuys",
-    issue: "Shift high-value West Coast demand from partner lift to controlled fleet",
-    evidence: "Broker / partner network mix increased on super-mid missions with lower trip-level contribution.",
+    locationId: "west-california",
+    issue: "Shift high-value West demand from operator network to Signature fleet",
+    evidence: "Safety-vetted operator network mix increased on super-mid missions with lower trip-level contribution.",
     estimatedImpactPts: 1.3,
     owner: "West coast ops",
     status: "open",
@@ -92,9 +95,9 @@ export const ACTIONS = [
   {
     id: "act-004",
     priority: "medium",
-    locationId: "dal-love",
+    locationId: "tx-dallas",
     issue: "Rebalance Phenom availability ahead of Monday corporate departures",
-    evidence: "Corporate desk demand is forecast above seat-hour plan while light-jet availability is below target.",
+    evidence: "Corporate membership demand is forecast above seat-hour plan while Phenom availability is below target.",
     estimatedImpactPts: 0.7,
     owner: "Central operations",
     status: "queued",
@@ -103,9 +106,9 @@ export const ACTIONS = [
   {
     id: "act-005",
     priority: "medium",
-    locationId: "ase-aspen",
-    issue: "Audit FBO and handling cost variance in Aspen seasonal operations",
-    evidence: "FBO/handling cost per leg is 14.8% above Mountain region median after seasonal ramp changes.",
+    locationId: "kjac-jackson-hole",
+    issue: "Audit FBO and handling cost variance in extended-area mountain operations",
+    evidence: "FBO/handling cost per leg is 14.8% above the modeled extended-area median after seasonal ramp changes.",
     estimatedImpactPts: 0.5,
     owner: "Mountain recovery desk",
     status: "open",
@@ -114,9 +117,9 @@ export const ACTIONS = [
   {
     id: "act-006",
     priority: "medium",
-    locationId: "pdk-atlanta",
-    issue: "Protect Delta referral conversion during peak recovery periods",
-    evidence: "Referral demand increased but service desk cycle time widened on disruption recovery legs.",
+    locationId: "east-georgia",
+    issue: "Protect Delta partnership conversion during peak recovery periods",
+    evidence: "Delta partnership demand increased but service team cycle time widened on recovery itineraries.",
     estimatedImpactPts: 0.6,
     owner: "Southeast ops",
     status: "open",
@@ -127,6 +130,14 @@ export const ACTIONS = [
 const itemById = Object.fromEntries(MENU_ITEMS.map((item) => [item.id, item]));
 const channelById = Object.fromEntries(CHANNELS.map((channel) => [channel.id, channel]));
 const PARTNER_CHANNELS = new Set(["broker-partner", "delta-referral", "group-cargo"]);
+const SUPPORTED_CHANNELS_BY_BRAND = {
+  signature: new Set(["direct", "member-services", "corporate-desk", "delta-referral"]),
+  "on-demand": new Set(["direct", "member-services", "broker-partner"]),
+  corporate: new Set(["direct", "member-services", "corporate-desk"]),
+  delta: new Set(["direct", "delta-referral"]),
+  group: new Set(["member-services", "group-cargo"]),
+  cargo: new Set(["broker-partner", "group-cargo"])
+};
 
 function seededRandom(seed) {
   let value = seed % 2147483647;
@@ -160,30 +171,34 @@ function weightedPick(items, random) {
 }
 
 function channelWeights(locationId, dayOffset) {
-  const directLift = ["teb-teterboro", "pdk-atlanta", "dal-love"].includes(locationId) ? 0.04 : 0;
-  const partnerPressure = ["vny-van-nuys", "teb-teterboro", "opf-miami"].includes(locationId) && dayOffset >= RECENT_PRESSURE_START ? 0.1 : 0;
+  const directLift = ["east-new-york", "east-georgia", "tx-dallas"].includes(locationId) ? 0.05 : 0;
+  const partnerPressure = ["west-california", "east-new-york", "east-florida"].includes(locationId) && dayOffset >= RECENT_PRESSURE_START ? 0.08 : 0;
   return [
-    { value: "direct", weight: 24 + directLift * 100 },
-    { value: "member-services", weight: 25 },
-    { value: "delta-referral", weight: 11 },
-    { value: "corporate-desk", weight: 17 },
-    { value: "broker-partner", weight: 15 + partnerPressure * 95 },
+    { value: "direct", weight: 23 + directLift * 100 },
+    { value: "member-services", weight: 24 },
+    { value: "delta-referral", weight: 12 },
+    { value: "corporate-desk", weight: 18 },
+    { value: "broker-partner", weight: 15 + partnerPressure * 90 },
     { value: "group-cargo", weight: 8 }
   ];
 }
 
 function locationDailyBase(location, dayOffset) {
-  const capacity = location.capacity === "high" ? 1.28 : location.capacity === "pilot" ? 0.54 : 0.86;
+  const capacity = location.capacity === "high" ? 1.2 : location.capacity === "access" ? 0.35 : 0.72;
   const weekend = [4, 5, 6].includes((dayOffset + 2) % 7) ? 1.16 : 1;
-  const seasonal = location.market === "Aspen" || location.market === "Nantucket" ? 1 + Math.sin((dayOffset - 35) / 18) * 0.18 : 1 + Math.sin((dayOffset + location.id.length) / 11) * 0.05;
-  const pressure = ["teb-teterboro", "opf-miami", "vny-van-nuys"].includes(location.id) && dayOffset >= RECENT_PRESSURE_START ? 0.94 : 1.01;
-  return 8.5 * capacity * weekend * seasonal * pressure;
+  const seasonal = ["Wyoming", "Idaho", "Montana", "Bahamas", "Europe"].includes(location.market) ? 1 + Math.sin((dayOffset - 35) / 18) * 0.18 : 1 + Math.sin((dayOffset + location.id.length) / 11) * 0.05;
+  const pressure = ["east-new-york", "east-florida", "west-california"].includes(location.id) && dayOffset >= RECENT_PRESSURE_START ? 0.94 : 1.01;
+  return 2.6 * capacity * weekend * seasonal * pressure;
 }
 
 function itemForBrand(brandId, day, channelId, locationId) {
   const items = MENU_ITEMS.filter((item) => item.brand === brandId);
   const index = (day + channelId.length + locationId.length) % items.length;
   return items[index];
+}
+
+function supportsChannel(brandId, channelId) {
+  return SUPPORTED_CHANNELS_BY_BRAND[brandId]?.has(channelId) ?? true;
 }
 
 function buildOrder(day, location, index, channelId, item, random) {
@@ -199,7 +214,7 @@ function buildOrder(day, location, index, channelId, item, random) {
     ],
     random
   );
-  const routeModifier = channelId === "group-cargo" ? 1.18 : channelId === "broker-partner" ? 1.08 : channelId === "direct" ? 0.98 : 1;
+  const routeModifier = channelId === "group-cargo" ? 1.16 : channelId === "broker-partner" ? 1.07 : channelId === "direct" ? 0.98 : 1;
   const grossSales = round(item.price * quantity * routeModifier * (0.94 + random() * 0.14));
   const discountRate = channelId === "direct" ? 0.004 : channelId === "corporate-desk" ? 0.009 : isPartner ? 0.014 : 0.007;
   const merchantPromo = round(grossSales * discountRate);
@@ -209,8 +224,8 @@ function buildOrder(day, location, index, channelId, item, random) {
   const refundPlatform = round(random() < 0.004 ? grossSales * 0.05 : 0);
   const platformFee = round(channel.commission * grossSales + channel.fixed * quantity);
   const paymentFee = round(channel.payment * grossSales);
-  const fuelInflation = item.category.includes("super") || item.category.includes("large") || item.category.includes("group") ? 1.055 : 1.024;
-  const repositioningFactor = ["teb-teterboro", "vny-van-nuys", "ase-aspen"].includes(location.id) && day >= RECENT_PRESSURE_START ? 1.07 : 1;
+  const fuelInflation = item.category.includes("super") || item.category.includes("charter") || item.category.includes("group") ? 1.055 : 1.024;
+  const repositioningFactor = ["east-new-york", "west-california", "kjac-jackson-hole"].includes(location.id) && day >= RECENT_PRESSURE_START ? 1.07 : 1;
   const foodCost = round(item.foodCost * quantity * fuelInflation * repositioningFactor * (0.96 + random() * 0.08));
   const packagingCost = round(item.packaging * quantity * (isPartner ? 1.1 : 1) * (daypart === "recovery" ? 1.08 : 1));
 
@@ -247,12 +262,12 @@ export function createSampleData() {
 
   for (let day = 0; day < DATA_DAYS; day += 1) {
     for (const location of LOCATIONS) {
-      const dailyTarget = Math.max(4, Math.round(locationDailyBase(location, day) + random() * 4));
-      const coverageTarget = CHANNELS.length * BRANDS.length;
+      const dailyTarget = Math.max(0, Math.round(locationDailyBase(location, day) + random() * 1.6 - 0.5));
+      const coverageTarget = Math.ceil((CHANNELS.length * BRANDS.length) / 7);
       const projectedLegs = dailyTarget + coverageTarget;
-      const laborBase = projectedLegs * (location.capacity === "high" ? 0.82 : location.capacity === "pilot" ? 0.54 : 0.68);
-      const laborVariance = ["teb-teterboro", "opf-miami", "ase-aspen"].includes(location.id) && day >= RECENT_PRESSURE_START ? 1.1 : 1;
-      const hourlyRate = location.district === "Northeast" ? 44 : location.district === "West" ? 43 : location.district === "Mountain" ? 41 : 39;
+      const laborBase = projectedLegs * (location.capacity === "high" ? 1.55 : location.capacity === "access" ? 0.86 : 1.22);
+      const laborVariance = ["east-new-york", "east-florida", "kjac-jackson-hole"].includes(location.id) && day >= RECENT_PRESSURE_START ? 1.1 : 1;
+      const hourlyRate = location.district === "East Primary Service Area" ? 44 : location.district === "West Primary Service Area" ? 43 : location.district === "Extended Service Area" ? 42 : 46;
       labor.push({
         date: isoDate(day),
         locationId: location.id,
@@ -265,6 +280,9 @@ export function createSampleData() {
       let orderIndex = 0;
       for (const channel of CHANNELS) {
         for (const brand of BRANDS) {
+          if (!supportsChannel(brand.id, channel.id)) continue;
+          const cadence = ["group", "cargo"].includes(brand.id) ? 14 : 7;
+          if ((day + channel.id.length + brand.id.length + location.id.length) % cadence !== 0) continue;
           const item = itemForBrand(brand.id, day, channel.id, location.id);
           orders.push(buildOrder(day, location, orderIndex, channel.id, item, random));
           orderIndex += 1;
@@ -276,7 +294,7 @@ export function createSampleData() {
         const item = weightedPick(
           MENU_ITEMS.map((menuItem) => ({
             value: menuItem,
-            weight: menuItem.brand === "signature" ? 1.32 : menuItem.brand === "corporate" ? 1.12 : menuItem.brand === "on-demand" ? 1.08 : 0.9
+            weight: menuItem.brand === "signature" ? 1.52 : menuItem.brand === "corporate" ? 1.18 : menuItem.brand === "on-demand" ? 1.12 : ["group", "cargo"].includes(menuItem.brand) ? 0.42 : 0.82
           })),
           random
         );
@@ -321,7 +339,7 @@ export function createForecast(orders, labor) {
     return weeks.map((week) => {
       const growth = 1 + week * 0.004 + Math.sin(week + location.id.length) * 0.011;
       const directMixLift = week >= 5 ? 0.006 * (week - 4) : 0;
-      const partnerRisk = ["teb-teterboro", "vny-van-nuys", "opf-miami"].includes(location.id) && week >= 4 ? 0.014 : 0;
+      const partnerRisk = ["east-new-york", "west-california", "east-florida"].includes(location.id) && week >= 4 ? 0.014 : 0;
       const revenueForecast = round(weeklyRevenue * growth * (0.985 + random() * 0.03));
       const ordersForecast = Math.round(weeklyOrders * growth * (0.98 + random() * 0.04));
       const cogsForecast = round(weeklyCogs * (growth + 0.006 * week));
@@ -355,12 +373,12 @@ function groupBy(rows, keyFn) {
 export function toSampleCsv(data) {
   const orderRows = data.orders.slice(0, 48).map((order) => ({
     date: order.date,
-    base: LOCATIONS.find((location) => location.id === order.locationId).name,
+    service_area: LOCATIONS.find((location) => location.id === order.locationId).name,
     product_line: BRANDS.find((brand) => brand.id === order.brandId).name,
     channel: CHANNELS.find((channel) => channel.id === order.channelId).name,
     aircraft_mission: itemById[order.itemId].name,
     flight_legs: order.quantity,
-    gross_revenue: order.grossSales,
+    gross_bookings: order.grossSales,
     recovery_credit: order.merchantPromo,
     service_credit: order.refundMerchant,
     partner_selling_cost: order.platformFee,
@@ -371,7 +389,7 @@ export function toSampleCsv(data) {
 
   const laborRows = data.labor.slice(0, 24).map((row) => ({
     date: row.date,
-    base: LOCATIONS.find((location) => location.id === row.locationId).name,
+    service_area: LOCATIONS.find((location) => location.id === row.locationId).name,
     scheduled_hours: row.scheduledHours,
     actual_hours: row.actualHours,
     hourly_rate: row.hourlyRate,

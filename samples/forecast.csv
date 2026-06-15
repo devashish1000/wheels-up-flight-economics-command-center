@@ -1,4 +1,5 @@
-week,base,revenue_forecast,flight_legs_forecast,flight_cost_forecast,support_cost_forecast,margin_forecast
-Week 1,Teterboro / New York,812000,74,392000,52000,229000
-Week 1,Miami Opa-locka,744000,69,361000,48000,198000
-Week 1,Van Nuys / Los Angeles,690000,61,348000,45500,176000
+week,service_area,gross_bookings_forecast,flight_legs_forecast,flight_cost_forecast,support_cost_forecast,margin_forecast
+Week 1,New York service area,1680000,43,1295000,64000,145000
+Week 1,Florida service area,1540000,39,1188000,59000,129000
+Week 1,California service area,1490000,37,1165000,57000,114000
+Week 1,Dallas, TX,1225000,34,925000,52000,108000

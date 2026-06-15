@@ -3,7 +3,7 @@ import { downloadText, toCsv } from "./csv.js";
 
 const DEFAULT_META = {
   generated: "May 11, 2026 8:30 AM",
-  disclosure: "Public-source-aligned Wheels Up product, market, and channel concepts; financial and operating values are modeled sample data, not actual Wheels Up data."
+  disclosure: "Public-source-aligned Wheels Up service areas, offerings, channels, fleet categories, and key metric scale; financial and operating values are modeled sample data, not actual Wheels Up data."
 };
 
 export function buildWeeklySummaryText(summary) {
@@ -65,7 +65,7 @@ export function downloadSummary(summary) {
       ],
       rows: [
         { metric: `Base ${forecastWeekLabel} CM%`, value: formatters.percent(summary.forecast.base), note: "Current modeled trajectory before scenario controls." },
-        { metric: `Scenario ${forecastWeekLabel} CM%`, value: formatters.percent(summary.forecast.scenario), note: "Updated by current member app mix, fuel cost, support efficiency, flight-leg volume, and service-credit assumptions." },
+        { metric: `Scenario ${forecastWeekLabel} CM%`, value: formatters.percent(summary.forecast.scenario), note: "Updated by current app + website mix, fuel cost, support efficiency, flight-leg volume, and service-credit assumptions." },
         { metric: "Upside vs base", value: formatters.points(summary.forecast.upside), note: "Modeled adjusted contribution improvement opportunity." }
       ]
     }]
@@ -74,10 +74,10 @@ export function downloadSummary(summary) {
 
 const CSV_SCHEMAS = {
   location: [
-    { key: "location", label: "Base" },
-    { key: "region", label: "Region" },
+    { key: "location", label: "Service Area" },
+    { key: "region", label: "Service Region" },
     { key: "market", label: "Market" },
-    { key: "net_sales", label: "Trip Revenue", format: "currency0" },
+    { key: "net_sales", label: "Gross Bookings", format: "currency0" },
     { key: "contribution_margin", label: "Adjusted Contribution", format: "currency0" },
     { key: "margin_pct", label: "CM %", format: "percent1" },
     { key: "delta_vs_prior", label: "Delta vs prior (pts)", format: "points1" },
@@ -88,7 +88,7 @@ const CSV_SCHEMAS = {
   menu: [
     { key: "item", label: "Aircraft / Mission" },
     { key: "brand", label: "Product Line" },
-    { key: "price", label: "Revenue", format: "currency2" },
+    { key: "price", label: "Gross Bookings", format: "currency2" },
     { key: "food_cost", label: "Flight Cost", format: "currency2" },
     { key: "packaging", label: "FBO / Handling", format: "currency2" },
     { key: "unit_contribution", label: "Unit Contribution", format: "currency2" },
@@ -99,7 +99,7 @@ const CSV_SCHEMAS = {
   ],
   forecast: [
     { key: "week", label: "Week" },
-    { key: "revenue", label: "Revenue", format: "currency0" },
+    { key: "revenue", label: "Gross Bookings", format: "currency0" },
     { key: "orders", label: "Flight Legs", format: "number0" },
     { key: "cogs", label: "Flight Cost", format: "currency0" },
     { key: "labor", label: "Support Cost", format: "currency0" },
@@ -109,7 +109,7 @@ const CSV_SCHEMAS = {
   ],
   actions: [
     { key: "priority", label: "Priority" },
-    { key: "location", label: "Base" },
+    { key: "location", label: "Service Area" },
     { key: "issue", label: "Issue" },
     { key: "evidence", label: "Evidence" },
     { key: "estimated_margin_impact_pts", label: "Estimated CM Impact (pts)", format: "points1" },
@@ -120,7 +120,7 @@ const CSV_SCHEMAS = {
 };
 
 function inferSchema(filename) {
-  if (filename.includes("base-performance") || filename.includes("location-performance")) return CSV_SCHEMAS.location;
+  if (filename.includes("service-area-performance") || filename.includes("base-performance") || filename.includes("location-performance")) return CSV_SCHEMAS.location;
   if (filename.includes("fleet-economics") || filename.includes("menu-margin")) return CSV_SCHEMAS.menu;
   if (filename.includes("rolling-forecast")) return CSV_SCHEMAS.forecast;
   if (filename.includes("operating-actions") || filename.includes("operator-actions")) return CSV_SCHEMAS.actions;
