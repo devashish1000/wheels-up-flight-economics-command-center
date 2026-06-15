@@ -127,18 +127,18 @@ export function renderSparkline(container, values, options = {}) {
 
 export function renderWaterfall(container, bridge) {
   const tooltip = resetChart(container);
-  const { width, height } = chartDimensions(container, 620, 264);
-  const pad = { top: 28, right: 22, bottom: 66, left: 46 };
+  const { width, height } = chartDimensions(container, 620, 278);
+  const compact = width < 560;
+  const pad = { top: 30, right: compact ? 14 : 22, bottom: compact ? 78 : 72, left: compact ? 42 : 50 };
   const node = svg(width, height, "chart waterfall-chart");
-  const minValue = Math.min(...bridge.map((item) => item.type ? item.value : 0.14));
-  const maxValue = Math.max(...bridge.map((item) => item.type ? item.value : 0.3), 0.3);
+  const { minValue, maxValue, ticks } = waterfallScale(bridge);
   const yScale = (value) => {
     const usable = height - pad.top - pad.bottom;
     return pad.top + (maxValue - value) / (maxValue - minValue || 1) * usable;
   };
   const xStep = (width - pad.left - pad.right) / bridge.length;
 
-  [0.15, 0.2, 0.25, 0.3].forEach((tick) => {
+  ticks.forEach((tick) => {
     const y = yScale(tick);
     node.appendChild(el("line", { x1: pad.left, x2: width - pad.right, y1: y, y2: y, class: "grid-line" }));
     node.appendChild(el("text", { x: 12, y: y + 4, class: "axis-label axis-y-label" }, formatters.percent(tick, 0)));
@@ -152,8 +152,8 @@ export function renderWaterfall(container, bridge) {
     let barHeight;
     let colorClass;
     if (item.type === "start" || item.type === "end") {
-      y = yScale(item.value);
-      barHeight = Math.max(3, yScale(minValue) - y);
+      y = yScale(item.value) - 2;
+      barHeight = 4;
       colorClass = "bar-total";
     } else {
       const next = cursor + item.value;
@@ -192,24 +192,29 @@ export function renderWaterfall(container, bridge) {
     const driverStart = item.type ? null : cursor - item.value;
     const driverEnd = item.type ? null : cursor;
     registerMark(hitGroup, container, tooltip, waterfallTooltip(item, driverStart, driverEnd));
+    const labelY = y - 9;
+    const labelClass = item.value >= 0 ? "value-label good" : "value-label bad";
     node.appendChild(
       el(
         "text",
-        { x: x + barWidth / 2, y: y - 8, class: item.value >= 0 ? "value-label good" : "value-label bad", "text-anchor": "middle" },
+        { x: x + barWidth / 2, y: labelY, class: labelClass, "text-anchor": "middle" },
         item.type ? formatters.percent(item.value) : formatters.points(item.value)
       )
     );
-    multilineText(
-      node,
-      waterfallLabel(item.label),
-      {
-        x: x + barWidth / 2,
-        y: height - 38,
-        class: "axis-label chart-x-label",
-        "text-anchor": "middle"
-      },
-      10
-    );
+    const labelLines = compact ? waterfallCompactLabel(item) : waterfallLabel(item.label);
+    if (labelLines.length) {
+      multilineText(
+        node,
+        labelLines,
+        {
+          x: x + barWidth / 2,
+          y: height - 38,
+          class: "axis-label chart-x-label",
+          "text-anchor": "middle"
+        },
+        10
+      );
+    }
   });
 
   container.appendChild(node);
@@ -285,8 +290,9 @@ export function renderDonut(container, rows) {
 export function renderForecast(container, series, options = {}) {
   const tooltip = resetChart(container);
   const { width, height } = chartDimensions(container, 650, 290, 290);
-  const pad = { top: 22, right: 24, bottom: 38, left: 46 };
-  const node = svg(width, height, "chart forecast-chart");
+  const compact = options.labelMode === "compact";
+  const pad = { top: 24, right: compact ? 18 : 24, bottom: 40, left: compact ? 44 : 50 };
+  const node = svg(width, height, `chart forecast-chart${compact ? " forecast-chart-compact" : ""}`);
   if (!series.length) {
     node.appendChild(el("line", { x1: pad.left, x2: width - pad.right, y1: (height - pad.top - pad.bottom) / 2 + pad.top, y2: (height - pad.top - pad.bottom) / 2 + pad.top, class: "grid-line" }));
     node.appendChild(el("text", {
@@ -305,13 +311,12 @@ export function renderForecast(container, series, options = {}) {
     return;
   }
   const values = series.flatMap((row) => [row.baseMarginPct, row.scenarioMarginPct]);
-  const min = Math.min(0.1, ...values) - 0.01;
-  const max = Math.max(0.3, ...values) + 0.01;
+  const { min, max, ticks } = percentScale(values, { include: [0.2], padding: 0.11, maxTicks: compact ? 4 : 6 });
   const x = (index) => pad.left + (index / (series.length - 1)) * (width - pad.left - pad.right);
   const y = (value) => pad.top + (max - value) / (max - min) * (height - pad.top - pad.bottom);
   const labelIndexes = forecastLabelIndexes(series.length, options.labelMode || "full");
 
-  [0.1, 0.15, 0.2, 0.25, 0.3].forEach((tick) => {
+  ticks.forEach((tick) => {
     const tickY = y(tick);
     node.appendChild(el("line", { x1: pad.left, x2: width - pad.right, y1: tickY, y2: tickY, class: "grid-line" }));
     node.appendChild(el("text", { x: 10, y: tickY + 4, class: "axis-label axis-y-label" }, formatters.percent(tick, 0)));
@@ -319,7 +324,9 @@ export function renderForecast(container, series, options = {}) {
 
   node.appendChild(linePath(series.map((row, index) => [x(index), y(row.baseMarginPct)]), "forecast-base"));
   node.appendChild(linePath(series.map((row, index) => [x(index), y(row.scenarioMarginPct)]), "forecast-scenario"));
-  node.appendChild(el("line", { x1: pad.left, x2: width - pad.right, y1: y(0.2), y2: y(0.2), class: "target-line" }));
+  if (0.2 >= min && 0.2 <= max) {
+    node.appendChild(el("line", { x1: pad.left, x2: width - pad.right, y1: y(0.2), y2: y(0.2), class: "target-line" }));
+  }
 
   series.forEach((row, index) => {
     const pointX = x(index);
@@ -337,8 +344,8 @@ export function renderForecast(container, series, options = {}) {
       y2: height - pad.bottom,
       class: "forecast-hover-line"
     }));
-    group.appendChild(el("circle", { cx: pointX, cy: y(row.baseMarginPct), r: 4, class: "forecast-point base" }));
-    group.appendChild(el("circle", { cx: pointX, cy: y(row.scenarioMarginPct), r: 4, class: "forecast-point scenario" }));
+    group.appendChild(el("circle", { cx: pointX, cy: y(row.baseMarginPct), r: compact ? 3 : 3.5, class: "forecast-point base" }));
+    group.appendChild(el("circle", { cx: pointX, cy: y(row.scenarioMarginPct), r: compact ? 3 : 3.5, class: "forecast-point scenario" }));
     group.appendChild(el("rect", {
       x: pointX - bandWidth / 2,
       y: pad.top,
@@ -371,6 +378,81 @@ function forecastLabelIndexes(length, mode) {
     indexes.add(index);
   }
   return indexes;
+}
+
+function waterfallScale(bridge) {
+  if (!bridge.length) return { minValue: 0, maxValue: 0.12, ticks: [0, 0.04, 0.08, 0.12] };
+  let cursor = bridge[0]?.value || 0;
+  const values = [cursor];
+  bridge.slice(1).forEach((item) => {
+    if (item.type === "end") {
+      values.push(item.value);
+      return;
+    }
+    values.push(cursor);
+    cursor += item.value || 0;
+    values.push(cursor);
+  });
+  const rawMin = Math.min(...values);
+  const rawMax = Math.max(...values);
+  const span = Math.max(0.025, rawMax - rawMin);
+  return percentScale(values, {
+    padding: 0.28,
+    floor: Math.max(0, rawMin - span * 0.55),
+    ceiling: Math.min(0.5, rawMax + span * 0.85),
+    maxTicks: 5
+  });
+}
+
+function percentScale(values, options = {}) {
+  const include = options.include || [];
+  const allValues = [...values, ...include].filter((value) => Number.isFinite(value));
+  const rawMin = allValues.length ? Math.min(...allValues) : 0;
+  const rawMax = allValues.length ? Math.max(...allValues) : 0.1;
+  const span = Math.max(0.02, rawMax - rawMin);
+  let min = Number.isFinite(options.floor) ? options.floor : Math.max(0, rawMin - span * (options.padding ?? 0.16));
+  let max = Number.isFinite(options.ceiling) ? options.ceiling : rawMax + span * (options.padding ?? 0.16);
+  if (max - min < 0.06) {
+    const midpoint = (max + min) / 2;
+    min = Math.max(0, midpoint - 0.03);
+    max = midpoint + 0.03;
+  }
+  const scale = percentTickScale(min, max, options.maxTicks || 5);
+  return {
+    min: scale.min,
+    max: scale.max,
+    minValue: scale.min,
+    maxValue: scale.max,
+    ticks: scale.ticks
+  };
+}
+
+function percentTickScale(min, max, maxTicks = 5) {
+  const steps = [0.005, 0.01, 0.02, 0.025, 0.05, 0.1, 0.2];
+  const span = Math.max(0.01, max - min);
+  const build = (step) => {
+    const start = Math.max(0, Math.floor(min / step) * step);
+    const end = Math.ceil(max / step) * step;
+    const count = Math.round((end - start) / step) + 1;
+    return { step, start, end, count };
+  };
+  const chosen = steps.map(build).find((candidate) => (
+    candidate.count >= 3 && candidate.count <= maxTicks
+  )) || steps.map(build).find((candidate) => (
+    candidate.count >= 3 && candidate.count <= maxTicks + 1
+  )) || build(steps.find((candidate) => span / candidate <= maxTicks - 1) || steps.at(-1));
+  const ticks = [];
+  for (let tick = chosen.start; tick <= chosen.end + chosen.step / 2; tick += chosen.step) {
+    const rounded = round(tick, 4);
+    if (rounded >= 0) {
+      ticks.push(rounded);
+    }
+  }
+  return {
+    min: chosen.start,
+    max: chosen.end,
+    ticks: ticks.length >= 2 ? ticks : [round(chosen.start, 3), round(chosen.end, 3)]
+  };
 }
 
 export function renderBarTrend(container, rows, accessor, labelAccessor) {
@@ -670,6 +752,16 @@ function waterfallLabel(label) {
     "current period": ["current", "period"]
   };
   return labels[label] || wrapWords(label, 10, 3);
+}
+
+function waterfallCompactLabel(item) {
+  const labels = {
+    start: ["prior"],
+    channel: ["channel"],
+    other: ["other"],
+    end: ["current"]
+  };
+  return labels[item.id] || [];
 }
 
 function wrapWords(label, maxChars = 12, maxLines = 2) {

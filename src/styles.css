@@ -642,23 +642,58 @@ h2 span,
 
 .axis-y-label {
   fill: var(--ink);
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 600;
 }
 
 .chart-x-label {
   fill: var(--ink);
-  font-size: 8.5px;
+  font-size: 8px;
   font-weight: 600;
 }
 
 .forecast-x-label {
-  font-size: 10px;
+  font-size: 9.5px;
 }
 
 .value-label {
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 700;
+}
+
+.waterfall-chart .axis-y-label {
+  fill: #24362f;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.waterfall-chart .chart-x-label {
+  fill: #17211d;
+  font-size: 7.6px;
+  font-weight: 750;
+}
+
+.waterfall-chart .value-label {
+  font-size: 8.8px;
+}
+
+.forecast-chart .axis-y-label {
+  fill: #24362f;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.forecast-chart-compact .forecast-base,
+.forecast-chart-compact .forecast-scenario {
+  stroke-width: 2.35;
+}
+
+.forecast-chart-compact .forecast-base {
+  opacity: 0.82;
+}
+
+.forecast-chart-compact .forecast-scenario {
+  stroke-dasharray: 10 8;
 }
 
 .menu-scale-label {
@@ -679,7 +714,7 @@ h2 span,
 
 .forecast-base,
 .forecast-scenario {
-  stroke-width: 3;
+  stroke-width: 2.7;
   stroke-linecap: round;
   stroke-linejoin: round;
   pointer-events: none;
